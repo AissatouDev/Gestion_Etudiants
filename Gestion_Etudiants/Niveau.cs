@@ -6,7 +6,19 @@ using System.Threading.Tasks;
 
 namespace Gestion_Etudiants
 {
-    internal class Niveau
+    public class Niveau
     {
+        public string Libelle { get; set; }
+        public Faculte Faculte { get; set; }
+        public List<Cours> Courses { get; set; }
+
+      
+
+        public Niveau(string libelle, Faculte faculte, List<Cours> courses) 
+        { 
+            Libelle = libelle;
+            Faculte = faculte;
+            Courses = courses;
+        }
     }
 }
