@@ -14,6 +14,8 @@ namespace Gestion_Etudiants
         public int VolumeHoraires { get; set; }
         public int Credits { get; set; }
         public string Description { get; set; }
+
+        public Niveau niveau;
        
         public Cours(string libelle, string code, int volumeHoraires, int credits, string description)
         {
@@ -22,6 +24,11 @@ namespace Gestion_Etudiants
             VolumeHoraires = volumeHoraires;
             Credits = credits;
             Description = description;
+        }
+
+        public void GetNiveau()
+        {
+            Console.WriteLine("Niveau: {0}", niveau.Libelle);
         }
     }
 

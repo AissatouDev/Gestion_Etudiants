@@ -13,12 +13,23 @@ namespace Gestion_Etudiants
         public string Telephone { get; set; }
         public string Email { get; set; }
 
+        public List<Niveau> niveaux;
+
         public Faculte(string libelle, string adresse, string telephone, string email) 
         { 
             Libelle = libelle;
             Adresse = adresse;
             Telephone = telephone;
             Email = email;
+        }
+
+        public void ListerNiveaux() 
+        {
+            Console.WriteLine($"Liste des niveaux dans la faculté {Libelle} :");
+            foreach (Niveau niveau in niveaux)
+            {
+                Console.WriteLine($"- {niveau.Libelle}");
+            }
         }
     }
 }
