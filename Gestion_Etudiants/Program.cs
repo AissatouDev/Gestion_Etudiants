@@ -38,6 +38,9 @@ List<Niveau> niveauxProposes = new List<Niveau>()
     new Niveau("Licence 3", faculte, coursesL3)
 };
 
+var etudiants = new List<Etudiant>();
+string etudiantsEnJson;
+int numeroEtudiant = 1;
 
 Niveau SelectNiveau(List<Niveau> niveaux)
 {
@@ -51,14 +54,21 @@ Niveau SelectNiveau(List<Niveau> niveaux)
     return niveaux[ choix - 1];
 }
 
+void EnregistrerEtudiant()
+{
+    // sérializer la liste des étudiants en format json
+    etudiantsEnJson = JsonConvert.SerializeObject(etudiants, Formatting.Indented);
+
+    // Enregistrer les étudiants dans un fichier json
+    File.AppendAllText("etudiants.json", etudiantsEnJson);
+    //File.WriteAllText("etudiants.json", etudiantsEnJson);
+
+}
 
 
 
 // Création Etudiant
-
-var etudiants = new List<Etudiant>();
-string etudiantsEnJson;
-int numeroEtudiant = 1;
+Console.WriteLine("Inscription Etudiant");
 
 while (true)
 {
@@ -151,69 +161,49 @@ Console.WriteLine("Liste des étudiants:");
         Console.WriteLine($"[{etudiant.Matricule}] {etudiant.Prenom} {etudiant.Nom} inscrit(e) en {etudiant.Niveau.Libelle}");
     }
 
-// sérializer la liste des étudiants en format json
- etudiantsEnJson = JsonConvert.SerializeObject(etudiants, Formatting.Indented);
-
-// Enregistrer les étudiants dans un fichier json
- File.WriteAllText("etudiants.json", etudiantsEnJson);
+EnregistrerEtudiant();
 
 //*************************************
 
-Console.WriteLine("Que voulez-vous faire ?");
-Console.WriteLine("1. Modifier les informations d'un étudiant");
-Console.WriteLine("2. Supprimer un étudiant");
+bool continuer = true;
 
-// Lecture de la réponse de l'utilisateur
-int choix = int.Parse(Console.ReadLine());
-
-// Traitement de la réponse de l'utilisateur
-switch (choix)
+while(continuer)
 {
-    case 1:
-// Modification des informations d'un étudiant
+    Console.WriteLine("Que voulez-vous faire ?");
+    Console.WriteLine("1. Modifier les informations d'un étudiant");
+    Console.WriteLine("2. Supprimer un étudiant");
+    Console.WriteLine("0. Quitter");
 
-        Etudiant.ModifierEtudiant(etudiants);
-        // sérializer la liste des étudiants en format json
-        etudiantsEnJson = JsonConvert.SerializeObject(etudiants, Formatting.Indented);
+    // Lecture de la réponse de l'utilisateur
+    int choix = int.Parse(Console.ReadLine());
 
-        // Enregistrer les étudiants dans un fichier json
-        File.WriteAllText("etudiants.json", etudiantsEnJson);
-        break;
+    // Traitement de la réponse de l'utilisateur
+    switch (choix)
+    {
+        case 1:
+            // Modification des informations d'un étudiant
+            Etudiant.ModifierEtudiant(etudiants);
+            // Mise à jpur de la liste des étudiants
+            EnregistrerEtudiant();
+            break;
 
-    case 2:
-// Suppression d'un étudiant
+        case 2:
+            // Suppression d'un étudiant
+            Etudiant.SupprimerEtudiant(etudiants);
+            // Mise à jpur de la liste des étudiants
+            EnregistrerEtudiant();
+            break;
 
-        Etudiant.SupprimerEtudiant(etudiants);
-        // sérializer la liste des étudiants en format json
-        etudiantsEnJson = JsonConvert.SerializeObject(etudiants, Formatting.Indented);
+        case 0: 
+            // Quitter le programme
+            continuer= false;
+            break;
 
-        // Enregistrer les étudiants dans un fichier json
-        File.WriteAllText("etudiants.json", etudiantsEnJson);
-
-        break;
-
-default:
-Console.WriteLine("Choix invalide.");
-break;
+        default:
+            Console.WriteLine("Choix invalide.");
+            break;
+    }
 }
 
-// Enregistrement des étudiants dans un fichier texte
-string nomFichier = "etudiants.txt";
-StreamWriter writer = new StreamWriter(nomFichier);
-foreach (Etudiant etudiant in etudiants)
-{
-    writer.WriteLine(etudiant.Matricule + ";" + etudiant.Prenom + ";" + etudiant.Nom + ";" + etudiant.Age + ";" + etudiant.Adresse + ";" + etudiant.Email);
-}
 
-// Modification Etudiant
-//Etudiant.ModifierEtudiant(etudiants);
 
-// Suppression Etudiant
-//Etudiant.SupprimerEtudiant(etudiants);
-
-// télécharger
-
-//etudiant.TelechargerInfosEtudiant();
-
-// Lister les cours d'un niveau
-//licence1.getListCourses();

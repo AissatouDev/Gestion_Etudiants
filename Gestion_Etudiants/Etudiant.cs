@@ -44,6 +44,7 @@ namespace Gestion_Etudiants
             return matricule;
         }
 
+     
         public void AfficherInfosEtudiant()
         {
             Console.WriteLine("Informations de l'étudiant {0}: ", Prenom);
@@ -185,17 +186,6 @@ namespace Gestion_Etudiants
 
             Console.WriteLine("Modification terminée !");
         }
-
-
-        // Enregistrement des modifications dans le fichier
-        //string jsonEtudiants = File.ReadAllText("etudiants.json");
-        //List<Etudiant> listeEtudiants = JsonConvert.DeserializeObject<List<Etudiant>>(jsonEtudiants);
-
-
-
-
-
-       
 
 
     }
