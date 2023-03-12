@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -79,42 +80,103 @@ namespace Gestion_Etudiants
 
         }
 
-        public static Etudiant RechercherParMatricule(List<Etudiant> etudiants, string matricule)
-        {
-            foreach (Etudiant etudiant in etudiants)
-            {
-                if (etudiant.Matricule == matricule)
-                {
-                    return etudiant;
-                }
-            }
-            return null;
-        }
+		/* public static Etudiant RechercherParMatricule(List<Etudiant> etudiants, string matricule)
+		 {
+			 foreach (Etudiant etudiant in etudiants)
+			 {
+				 if (etudiant.Matricule == matricule)
+				 {
+					 return etudiant;
+				 }
+			 }
+			 return null;
+		 }
+		*/
+		public static Etudiant RechercherParMatricule(List<Etudiant> etudiants, string matricule)
+		{
+			return etudiants.FirstOrDefault(e => string.Equals(e.Matricule, matricule, StringComparison.CurrentCultureIgnoreCase));
+		}
 
-       
+		public static void MettreAJourEtudiant(Etudiant etudiantAModifierOuSupprimer, List<Etudiant> etudiants)
+		{
+			// Trouver l'index de l'étudiant à modifier ou supprimer
+			int indexEtudiant = -1;
+			if (etudiantAModifierOuSupprimer != null)
+			{
+				indexEtudiant = etudiants.FindIndex(e => e.Matricule == etudiantAModifierOuSupprimer.Matricule);
+			}
+			else
+			{
+				Etudiant etudiantASupprimer = RechercherParMatricule(etudiants, etudiantAModifierOuSupprimer.Matricule);
+				if (etudiantASupprimer != null)
+				{
+					indexEtudiant = etudiants.IndexOf(etudiantASupprimer);
+				}
+			}
+
+			// Vérifier si l'étudiant a été trouvé
+			if (indexEtudiant >= 0)
+			{
+				// Si l'étudiant a été trouvé, modifier ou supprimer l'étudiant concerné
+				if (etudiantAModifierOuSupprimer == null)
+				{
+					// Supprimer l'étudiant du fichier json
+					var json = File.ReadAllText("etudiants.json");
+					JArray jArray = JArray.Parse(json);
+					jArray.RemoveAt(indexEtudiant);
+					File.WriteAllText("etudiants.json", jArray.ToString());
+
+					// Supprimer l'étudiant
+					etudiants.RemoveAt(indexEtudiant);
+				}
+				else
+				{
+					// Modifier l'étudiant
+					etudiants[indexEtudiant] = etudiantAModifierOuSupprimer;
+				}
+
+				// Sérializer la nouvelle liste des étudiants en format json
+				string nouvelleListeEtudiantsEnJson = JsonConvert.SerializeObject(etudiants, Formatting.Indented);
+
+				// Enregistrer la nouvelle liste des étudiants dans le fichier json
+				File.WriteAllText("etudiants.json", nouvelleListeEtudiantsEnJson);
+
+				// Afficher un message pour indiquer que la mise à jour est terminée
+				Console.WriteLine("La mise à jour des étudiants a été effectuée avec succès.");
+			}
+			else
+			{
+				// Si l'étudiant n'a pas été trouvé, afficher un message d'erreur
+				Console.WriteLine("Erreur : étudiant introuvable.");
+			}
+		}
 
 
-        public static void SupprimerEtudiant(List<Etudiant> etudiants)
-        {
-            Console.WriteLine("Entrez le matricule de l'étudiant à supprimer : ");
-            string matricule = Console.ReadLine();
 
-            Etudiant etudiantASupprimer = RechercherParMatricule(etudiants, matricule);
+		public static Etudiant SupprimerEtudiant(List<Etudiant> etudiants)
+		{
+			Console.WriteLine("Entrez le matricule de l'étudiant à supprimer : ");
+			string matricule = Console.ReadLine();
 
-            if (etudiantASupprimer == null)
-            {
-                Console.WriteLine("Aucun étudiant trouvé avec ce matricule.");
-                return;
-            }
+			Etudiant etudiantASupprimer = RechercherParMatricule(etudiants, matricule);
 
-            etudiants.Remove(etudiantASupprimer);
-            Console.WriteLine($"L'étudiant {etudiantASupprimer.Prenom} {etudiantASupprimer.Nom} ({etudiantASupprimer.Matricule}) a été supprimé.");
-           
-        }
+			if (etudiantASupprimer == null)
+			{
+				Console.WriteLine("Aucun étudiant trouvé avec ce matricule.");
+				return null;
+			}
+
+			etudiants.Remove(etudiantASupprimer);
+
+			MettreAJourEtudiant(etudiantASupprimer, etudiants);
+
+			Console.WriteLine($"L'étudiant {etudiantASupprimer.Prenom} {etudiantASupprimer.Nom} ({etudiantASupprimer.Matricule}) a été supprimé.");
+            return etudiantASupprimer;
+		}
 
 
 
-        public static void ModifierEtudiant(List<Etudiant> etudiants)
+		public static Etudiant ModifierEtudiant(List<Etudiant> etudiants)
         {
             Console.WriteLine("Entrez le matricule de l'étudiant à modifier : ");
             string matricule = Console.ReadLine();
@@ -126,7 +188,7 @@ namespace Gestion_Etudiants
             if (etudiantAModifier == null)
             {
                 Console.WriteLine("Aucun étudiant trouvé avec ce matricule.");
-                return;
+                return null;
             }
 
             // Sinon, on demande les informations à modifier et on les affecte à l'étudiant
@@ -182,10 +244,11 @@ namespace Gestion_Etudiants
                 etudiantAModifier.Telephone = nouveauNumeroTelephone;
             }
 
-            etudiants.Add(etudiantAModifier);
+            MettreAJourEtudiant(etudiantAModifier, etudiants);
 
             Console.WriteLine("Modification terminée !");
-        }
+			return etudiantAModifier;
+		}
 
 
     }

@@ -42,6 +42,16 @@ var etudiants = new List<Etudiant>();
 string etudiantsEnJson;
 int numeroEtudiant = 1;
 
+void AfficherListeEtudiants(){
+
+	Console.WriteLine("Liste des étudiants:");
+	foreach (var etudiant in etudiants)
+	{
+		Console.WriteLine($"[{etudiant.Matricule}] {etudiant.Prenom} {etudiant.Nom} inscrit(e) en {etudiant.Niveau.Libelle}");
+	}
+
+}
+
 Niveau SelectNiveau(List<Niveau> niveaux)
 {
     Console.WriteLine("Liste des niveaux: ");
@@ -60,11 +70,9 @@ void EnregistrerEtudiant()
     etudiantsEnJson = JsonConvert.SerializeObject(etudiants, Formatting.Indented);
 
     // Enregistrer les étudiants dans un fichier json
-    File.AppendAllText("etudiants.json", etudiantsEnJson);
-    //File.WriteAllText("etudiants.json", etudiantsEnJson);
-
+    //File.AppendAllText("etudiants.json", etudiantsEnJson);
+    File.WriteAllText("etudiants.json", etudiantsEnJson);
 }
-
 
 
 // Création Etudiant
@@ -154,14 +162,9 @@ while (true)
 
 
 // afficher la liste des étudiants
+    AfficherListeEtudiants();
 
-Console.WriteLine("Liste des étudiants:");
-    foreach (var etudiant in etudiants)
-    {
-        Console.WriteLine($"[{etudiant.Matricule}] {etudiant.Prenom} {etudiant.Nom} inscrit(e) en {etudiant.Niveau.Libelle}");
-    }
-
-EnregistrerEtudiant();
+    EnregistrerEtudiant();
 
 //*************************************
 
@@ -182,16 +185,12 @@ while(continuer)
     {
         case 1:
             // Modification des informations d'un étudiant
-            Etudiant.ModifierEtudiant(etudiants);
-            // Mise à jpur de la liste des étudiants
-            EnregistrerEtudiant();
+           Etudiant.ModifierEtudiant(etudiants);
             break;
 
         case 2:
-            // Suppression d'un étudiant
-            Etudiant.SupprimerEtudiant(etudiants);
-            // Mise à jpur de la liste des étudiants
-            EnregistrerEtudiant();
+			// Suppression d'un étudiant
+			Etudiant.SupprimerEtudiant(etudiants);
             break;
 
         case 0: 
@@ -204,6 +203,7 @@ while(continuer)
             break;
     }
 }
+AfficherListeEtudiants();
 
 
 
